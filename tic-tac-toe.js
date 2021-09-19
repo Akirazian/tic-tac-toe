@@ -1,11 +1,22 @@
-const gameBoard = ((position) => {
+const gameBoard = (() => { //game board module
+
   let board = [
     "", "", "", 
     "", "", "", 
     "", "", ""
   ]
 
-  const clearBoard = () => board = ["", "", "", "", "", "", "", "", ""];
+  const mark = (event) => {
+    if (event.target.innerText != "") return;
+    game.nextTurn(event);
+    game.checkGame();
+    display();
+  }
+
+  const clear = () => {
+    board = ["", "", "", "", "", "", "", "", ""];
+    display();
+  }
 
   const display = () => {
     for (i = 0; i < board.length; i++) {
@@ -16,43 +27,41 @@ const gameBoard = ((position) => {
 
   return {
     board,
+    mark,
     display,
-    clearBoard
+    clear
   }
 })();
 
-const Player = (sign) => {
+const Player = (sign) => { //Player factory
 
-  const mark = (event) => {
-    if (event.target.innerText != "") return;
-    gameBoard.board[event.target.id] = sign;
-    gameBoard.display();
-  }
-
-  return {
-    mark
-  }
 };
 
-const xPlayer = Player("X");
-const oPlayer = Player("O");
 
-const game = (() => {
-  let turn = "X";
+const game = (() => { //game logic module
 
-  const mark = (event) => {
-    if (turn === "X") xPlayer.mark(event);
-    else oPlayer.mark(event);
+  let currentPlayer = "X";
 
-    if (turn === "X") turn = "O";
-    else turn = "X"
+  const nextTurn = (event) => {
+    gameBoard.board[event.target.id] = currentPlayer;
+    if (currentPlayer === "X") currentPlayer = "O";
+    else currentPlayer = "X"
+  }
+ 
+  const checkGame = () => {
+    if (gameBoard.board.every((value => value != ""))) {
+       results.innerText = "It's a draw!";
+    }
   }
 
   return {
-    mark
+    nextTurn,
+    checkGame
   }
+  
 
 })();
 
+const results = document.querySelector(".results");
 const boxes = document.querySelectorAll(".box");
-boxes.forEach((box) => box.addEventListener("click", game.mark))
+boxes.forEach((box) => box.addEventListener("click", gameBoard.mark))
