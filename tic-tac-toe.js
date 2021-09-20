@@ -50,26 +50,41 @@ const game = (() => { //game logic module
   }
  
   const checkGame = () => {
-    const resultDisplay = document.querySelector(".results");
 
-    for ( let i = 0; i <= 6; i += 3) { //rows
+    for (let i = 0; i <= 6; i += 3) { //rows
       let row = gameBoard.board.slice(i, (i+3));
       if (row.every(box => box == row[0] && box != "")) {
-        resultDisplay.innerText = `${currentPlayer} wins!`
+        callWinner();
       }
     }
 
-    for ( let i = 0; i <= 6; i += 3) { //rows
-      let row = gameBoard.board.slice(i, (i+3));
-      if (row.every(box => box == row[0] && box != "")) {
-        resultDisplay.innerText = `${currentPlayer} wins!`
+    for (let i = 0; i <= 2; i++) { //columns
+      let column = [gameBoard.board[i], gameBoard.board[i+3], gameBoard.board[i+6]];
+      if (column.every(box => box == column[0] && box != "")) {
+        callWinner();
       }
+    }
+
+    let diagnol1 = [gameBoard.board[0], gameBoard.board[4], gameBoard.board[8]];
+    if (diagnol1.every(box => box == diagnol1[0] && box != "")) {
+      callWinner();
+    }
+
+    let diagnol2 = [gameBoard.board[2], gameBoard.board[4], gameBoard.board[6]];
+    if (diagnol2.every(box => box == diagnol2[0] && box != "")) {
+      callWinner();
     }
     
     if (gameBoard.board.every((value => value != ""))) {
        resultDisplay.innerText = "It's a draw!";
     }
+  } 
+  const callWinner = () => {
+    const resultDisplay = document.querySelector(".results");
+    resultDisplay.innerText = `${currentPlayer} wins!`
+    
   }
+  
 
   return {
     playTurn,
