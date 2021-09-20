@@ -1,3 +1,5 @@
+Array.prototype.range = (start, end) => Array.from({length: (end - start)}, (v, k) => k + start);
+
 const gameBoard = (() => { //game board module
 
   let board = [
@@ -8,8 +10,7 @@ const gameBoard = (() => { //game board module
 
   const mark = (event) => {
     if (event.target.innerText != "") return;
-    game.nextTurn(event);
-    game.checkGame();
+    game.playTurn(event);
     display();
   }
 
@@ -28,7 +29,6 @@ const gameBoard = (() => { //game board module
   return {
     board,
     mark,
-    display,
     clear
   }
 })();
@@ -42,26 +42,41 @@ const game = (() => { //game logic module
 
   let currentPlayer = "X";
 
-  const nextTurn = (event) => {
+  const playTurn = (event) => {
     gameBoard.board[event.target.id] = currentPlayer;
+    checkGame();
     if (currentPlayer === "X") currentPlayer = "O";
     else currentPlayer = "X"
   }
  
   const checkGame = () => {
+    const resultDisplay = document.querySelector(".results");
+
+    for ( let i = 0; i <= 6; i += 3) { //rows
+      let row = gameBoard.board.slice(i, (i+3));
+      if (row.every(box => box == row[0] && box != "")) {
+        resultDisplay.innerText = `${currentPlayer} wins!`
+      }
+    }
+
+    for ( let i = 0; i <= 6; i += 3) { //rows
+      let row = gameBoard.board.slice(i, (i+3));
+      if (row.every(box => box == row[0] && box != "")) {
+        resultDisplay.innerText = `${currentPlayer} wins!`
+      }
+    }
+    
     if (gameBoard.board.every((value => value != ""))) {
-       results.innerText = "It's a draw!";
+       resultDisplay.innerText = "It's a draw!";
     }
   }
 
   return {
-    nextTurn,
-    checkGame
+    playTurn,
   }
   
 
 })();
 
-const results = document.querySelector(".results");
 const boxes = document.querySelectorAll(".box");
 boxes.forEach((box) => box.addEventListener("click", gameBoard.mark))
