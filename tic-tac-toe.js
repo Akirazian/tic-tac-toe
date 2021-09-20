@@ -41,6 +41,7 @@ const Player = (sign) => { //Player factory
 const game = (() => { //game logic module
 
   let currentPlayer = "X";
+  const resultDisplay = document.querySelector(".results");
 
   const playTurn = (event) => {
     gameBoard.board[event.target.id] = currentPlayer;
@@ -79,12 +80,11 @@ const game = (() => { //game logic module
        resultDisplay.innerText = "It's a draw!";
     }
   } 
+
   const callWinner = () => {
-    const resultDisplay = document.querySelector(".results");
     resultDisplay.innerText = `${currentPlayer} wins!`
-    
+
   }
-  
 
   return {
     playTurn,
