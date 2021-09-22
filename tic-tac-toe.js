@@ -1,33 +1,30 @@
-Array.prototype.range = (start, end) => Array.from({length: (end - start)}, (v, k) => k + start);
-
-const gameBoard = (() => { //game board module
-
   let board = [
     "", "", "", 
     "", "", "", 
     "", "", ""
   ]
 
+const gameBoard = (() => { //game board module
+
   const mark = (event) => {
     if (event.target.innerText != "") return;
     game.playTurn(event);
-    display();
+    _display();
   }
 
   const clear = () => {
     board = ["", "", "", "", "", "", "", "", ""];
-    display();
+    _display();
   }
 
-  const display = () => {
-    for (i = 0; i < board.length; i++) {
+  const _display = () => {
+    for (let i = 0; i < board.length; i++) {
       let box = document.getElementById(i);
       box.innerText = board[i];
     }
   }
 
   return {
-    board,
     mark,
     clear
   }
@@ -37,61 +34,75 @@ const Player = (sign) => { //Player factory
 
 };
 
-
 const game = (() => { //game logic module
 
   let currentPlayer = "X";
   const resultDisplay = document.querySelector(".results");
+  const boxes = document.querySelectorAll(".box");
+
+  const start = () => {
+    if (board.some((value => value != ""))) {
+      gameBoard.clear();
+      resultDisplay.innerText = "";
+    }
+    boxes.forEach((box) => box.addEventListener("click", gameBoard.mark))
+    startButton.classList.add("invisible");
+    restartButton.classList.add("invisible");
+  }
 
   const playTurn = (event) => {
-    gameBoard.board[event.target.id] = currentPlayer;
-    checkGame();
+    board[event.target.id] = currentPlayer;
+    _checkGame();
     if (currentPlayer === "X") currentPlayer = "O";
     else currentPlayer = "X"
   }
  
-  const checkGame = () => {
+  const _checkGame = () => {
 
     for (let i = 0; i <= 6; i += 3) { //rows
-      let row = gameBoard.board.slice(i, (i+3));
+      let row = board.slice(i, (i+3));
       if (row.every(box => box == row[0] && box != "")) {
-        callWinner();
+        _callWinner();
       }
     }
 
     for (let i = 0; i <= 2; i++) { //columns
-      let column = [gameBoard.board[i], gameBoard.board[i+3], gameBoard.board[i+6]];
+      let column = [board[i], board[i+3], board[i+6]];
       if (column.every(box => box == column[0] && box != "")) {
-        callWinner();
+        _callWinner();
       }
     }
 
-    let diagnol1 = [gameBoard.board[0], gameBoard.board[4], gameBoard.board[8]];
+    let diagnol1 = [board[0], board[4], board[8]];
     if (diagnol1.every(box => box == diagnol1[0] && box != "")) {
-      callWinner();
+      _callWinner();
     }
 
-    let diagnol2 = [gameBoard.board[2], gameBoard.board[4], gameBoard.board[6]];
+    let diagnol2 = [board[2], board[4], board[6]];
     if (diagnol2.every(box => box == diagnol2[0] && box != "")) {
-      callWinner();
+      _callWinner();
+
     }
     
-    if (gameBoard.board.every((value => value != ""))) {
+    if (board.every((value => value != ""))) {
        resultDisplay.innerText = "It's a draw!";
     }
   } 
 
-  const callWinner = () => {
+  const _callWinner = () => {
     resultDisplay.innerText = `${currentPlayer} wins!`
-
+    boxes.forEach(box => box.removeEventListener("click", gameBoard.mark))
+    restartButton.classList.remove("invisible");
   }
 
   return {
+    start,
     playTurn,
   }
-  
-
 })();
 
 const boxes = document.querySelectorAll(".box");
-boxes.forEach((box) => box.addEventListener("click", gameBoard.mark))
+const startButton = document.getElementById("start-button");
+startButton.addEventListener("click", game.start);
+const restartButton = document.getElementById("restart-button");
+restartButton.addEventListener("click", game.start);

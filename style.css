@@ -23,3 +23,12 @@ body {
   align-items: center;
   font-size: 5rem
 }
+
+.button-container {
+  display: flex;
+  justify-content: center;
+}
+
+.invisible {
+  display: none;
+}
