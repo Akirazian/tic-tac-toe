@@ -9,6 +9,7 @@ body {
   width: 100%;
   height: 500px;
   display: grid;
+  border: 2px solid black;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   max-width: 500px;
@@ -24,10 +25,21 @@ body {
   font-size: 5rem
 }
 
-.button-container {
+.player-input {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-bottom: 0px;
+}
+
+.results {
+  margin-bottom: 0px;
+}
+
+/* .button-container {
   display: flex;
   justify-content: center;
-}
+} */
 
 .invisible {
   display: none;

@@ -1,8 +1,8 @@
-  let board = [
-    "", "", "", 
-    "", "", "", 
-    "", "", ""
-  ]
+let board = [
+  "", "", "", 
+  "", "", "", 
+  "", "", ""
+]
 
 const gameBoard = (() => { //game board module
 
@@ -30,31 +30,71 @@ const gameBoard = (() => { //game board module
   }
 })();
 
-const Player = (sign) => { //Player factory
+const Player = (name) => { //Player factory
+  let score = 0;
 
+  const win = () => {
+    score++;
+  }
+
+  const getScore = () => {
+    return score;
+  }
+  
+  return { name, getScore, win };
 };
+
+// const display
 
 const game = (() => { //game logic module
 
-  let currentPlayer = "X";
   const resultDisplay = document.querySelector(".results");
   const boxes = document.querySelectorAll(".box");
+  const playerInput = document.getElementById("player-input")
+  const playerOneInput = document.getElementById("player-1-input");
+  const playerTwoInput = document.getElementById("player-2-input");
+  
+  let currentPlayer = "X";
+  let xPlayer = ""
+  let oPlayer = ""
+  let winner = false;
 
   const start = () => {
-    if (board.some((value => value != ""))) {
-      gameBoard.clear();
-      resultDisplay.innerText = "";
-    }
-    boxes.forEach((box) => box.addEventListener("click", gameBoard.mark))
+    if (playerOneInput.value === "" || playerTwoInput.value === "") return;    
+
+    xPlayer = Player(playerOneInput.value);
+    oPlayer = Player(playerTwoInput.value);
+
+    playerInput.classList.add("invisible");
     startButton.classList.add("invisible");
+    resultDisplay.classList.remove("invisible");
+    resultDisplay.innerText = `${xPlayer.name}'s turn`
+    boxes.forEach((box) => box.addEventListener("click", gameBoard.mark))
+  }
+
+  const restart = () => {
+    gameBoard.clear();
+    resultDisplay.innerText = "";
     restartButton.classList.add("invisible");
+    boxes.forEach(box => box.addEventListener("click", gameBoard.mark))
+    resultDisplay.innerText = `${xPlayer.name}'s turn`
   }
 
   const playTurn = (event) => {
     board[event.target.id] = currentPlayer;
     _checkGame();
-    if (currentPlayer === "X") currentPlayer = "O";
-    else currentPlayer = "X"
+    if (winner === true){
+      winner = false;
+      return;
+    }
+    if (currentPlayer === "X") {
+      currentPlayer = "O";
+      resultDisplay.innerText = `${oPlayer.name}'s turn`
+    }
+    else {
+      currentPlayer = "X"
+      resultDisplay.innerText = `${xPlayer.name}'s turn`
+    }
   }
  
   const _checkGame = () => {
@@ -81,22 +121,29 @@ const game = (() => { //game logic module
     let diagnol2 = [board[2], board[4], board[6]];
     if (diagnol2.every(box => box == diagnol2[0] && box != "")) {
       _callWinner();
-
     }
     
     if (board.every((value => value != ""))) {
        resultDisplay.innerText = "It's a draw!";
+       restartButton.classList.remove("invisible");
     }
   } 
 
   const _callWinner = () => {
-    resultDisplay.innerText = `${currentPlayer} wins!`
+    winner = true;
+    currentPlayer === "X" ? xPlayer.win() : oPlayer.win();
+    if (currentPlayer === "X") {
+      resultDisplay.innerText = `${xPlayer.name} wins! Score is now ${xPlayer.getScore()} to ${oPlayer.getScore()}` 
+    } else {
+      resultDisplay.innerText = `${oPlayer.name} wins! Score is now ${xPlayer.getScore()} to ${oPlayer.getScore()}`
+    }
     boxes.forEach(box => box.removeEventListener("click", gameBoard.mark))
     restartButton.classList.remove("invisible");
   }
 
   return {
     start,
+    restart,
     playTurn,
   }
 })();
@@ -105,4 +152,4 @@ const boxes = document.querySelectorAll(".box");
 const startButton = document.getElementById("start-button");
 startButton.addEventListener("click", game.start);
 const restartButton = document.getElementById("restart-button");
-restartButton.addEventListener("click", game.start);
+restartButton.addEventListener("click", game.restart);
