@@ -5,7 +5,7 @@ let board = [
 ]
 
 const gameBoard = (() => { //game board module
-
+ 
   const mark = (event) => {
     if (event.target.innerText != "") return;
     game.playTurn(event);
@@ -77,16 +77,15 @@ const game = (() => { //game logic module
     resultDisplay.innerText = "";
     restartButton.classList.add("invisible");
     boxes.forEach(box => box.addEventListener("click", gameBoard.mark))
+    winner = false;
+    currentPlayer = "X";
     resultDisplay.innerText = `${xPlayer.name}'s turn`
   }
 
   const playTurn = (event) => {
     board[event.target.id] = currentPlayer;
     _checkGame();
-    if (winner === true){
-      winner = false;
-      return;
-    }
+    if (winner === true) return;
     if (currentPlayer === "X") {
       currentPlayer = "O";
       resultDisplay.innerText = `${oPlayer.name}'s turn`
@@ -101,31 +100,32 @@ const game = (() => { //game logic module
 
     for (let i = 0; i <= 6; i += 3) { //rows
       let row = board.slice(i, (i+3));
-      if (row.every(box => box == row[0] && box != "")) {
+      if (row.every(box => box === row[0] && box != "")) {
         _callWinner();
       }
     }
 
     for (let i = 0; i <= 2; i++) { //columns
       let column = [board[i], board[i+3], board[i+6]];
-      if (column.every(box => box == column[0] && box != "")) {
+      if (column.every(box => box === column[0] && box != "")) {
         _callWinner();
       }
     }
 
     let diagnol1 = [board[0], board[4], board[8]];
-    if (diagnol1.every(box => box == diagnol1[0] && box != "")) {
+    if (diagnol1.every(box => box === diagnol1[0] && box != "")) {
       _callWinner();
     }
 
     let diagnol2 = [board[2], board[4], board[6]];
-    if (diagnol2.every(box => box == diagnol2[0] && box != "")) {
+    if (diagnol2.every(box => box === diagnol2[0] && box != "")) {
       _callWinner();
     }
     
-    if (board.every((value => value != ""))) {
+    if (board.every((value => value != "")) && winner === false) {
        resultDisplay.innerText = "It's a draw!";
        restartButton.classList.remove("invisible");
+       winner = true;
     }
   } 
 
