@@ -44,22 +44,24 @@ const Player = (name) => { //Player factory
   return { name, getScore, win };
 };
 
-// const display
-
 const game = (() => { //game logic module
 
-  const resultDisplay = document.querySelector(".results");
   const boxes = document.querySelectorAll(".box");
-  const playerInput = document.getElementById("player-input")
-  const playerOneInput = document.getElementById("player-1-input");
-  const playerTwoInput = document.getElementById("player-2-input");
-  
+  const resultDisplay = document.querySelector(".results");
+  const scoreDisplay = document.querySelector(".score-container");
+  const playerOneScore = document.getElementById("player-1-score");
+  const playerTwoScore = document.getElementById("player-2-score");
+
   let currentPlayer = "X";
   let xPlayer = ""
   let oPlayer = ""
   let winner = false;
 
   const start = () => {
+    const playerInput = document.getElementById("player-input")
+    const playerOneInput = document.getElementById("player-1-input");
+    const playerTwoInput = document.getElementById("player-2-input");
+
     if (playerOneInput.value === "" || playerTwoInput.value === "") return;    
 
     xPlayer = Player(playerOneInput.value);
@@ -68,7 +70,10 @@ const game = (() => { //game logic module
     playerInput.classList.add("invisible");
     startButton.classList.add("invisible");
     resultDisplay.classList.remove("invisible");
+    scoreDisplay.classList.remove("invisible");
     resultDisplay.innerText = `${xPlayer.name}'s turn`
+    playerOneScore.innerText = `${xPlayer.name}: ${xPlayer.getScore()}`
+    playerTwoScore.innerText = `${oPlayer.name}: ${oPlayer.getScore()}`
     boxes.forEach((box) => box.addEventListener("click", gameBoard.mark))
   }
 
@@ -97,7 +102,6 @@ const game = (() => { //game logic module
   }
  
   const _checkGame = () => {
-
     for (let i = 0; i <= 6; i += 3) { //rows
       let row = board.slice(i, (i+3));
       if (row.every(box => box === row[0] && box != "")) {
@@ -131,12 +135,15 @@ const game = (() => { //game logic module
 
   const _callWinner = () => {
     winner = true;
-    currentPlayer === "X" ? xPlayer.win() : oPlayer.win();
     if (currentPlayer === "X") {
-      resultDisplay.innerText = `${xPlayer.name} wins! Score is now ${xPlayer.getScore()} to ${oPlayer.getScore()}` 
+      xPlayer.win()
+      resultDisplay.innerText = `${xPlayer.name} wins!` 
     } else {
-      resultDisplay.innerText = `${oPlayer.name} wins! Score is now ${xPlayer.getScore()} to ${oPlayer.getScore()}`
+      oPlayer.win();
+      resultDisplay.innerText = `${oPlayer.name} wins!`
     }
+    playerOneScore.innerText = `${xPlayer.name}: ${xPlayer.getScore()}`
+    playerTwoScore.innerText = `${oPlayer.name}: ${oPlayer.getScore()}`
     boxes.forEach(box => box.removeEventListener("click", gameBoard.mark))
     restartButton.classList.remove("invisible");
   }
@@ -148,7 +155,6 @@ const game = (() => { //game logic module
   }
 })();
 
-const boxes = document.querySelectorAll(".box");
 const startButton = document.getElementById("start-button");
 startButton.addEventListener("click", game.start);
 const restartButton = document.getElementById("restart-button");

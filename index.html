@@ -8,8 +8,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Tic-Tac-Toe</h1>
-
+  <h1 id="title">Tic-Tac-Toe</h1>
   <div class="board">
     <div class="box" id="0"></div>
     <div class="box" id="1"></div>
@@ -33,10 +32,15 @@
       <input type="text" id="player-2-input">
     </div>
   </h2>
-  <div id="button-container" class="button-container">
+  <h3 class="score-container invisible" id="score-container">
+    <div class="score" id="player-1-score"></div>
+    <div class="score" id="player-2-score"></div>
+  </h3>
+  <div class="button-container" id="button-container">
     <h3><button type="button" id="start-button">Start</button></h3>
-    <h3><button type="button" id="restart-button" class="invisible">Restart</button></h3>
+    <h3><button type="button" id="restart-button" class="invisible">New Round</button></h3>
   </div>
+  
 
 </body>
 
