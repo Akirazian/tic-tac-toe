@@ -1,13 +1,14 @@
-let board = [
-  "", "", "", 
-  "", "", "", 
-  "", "", ""
-]
-
 const gameBoard = (() => { //game board module
+
+  let board = [
+    "", "", "", 
+    "", "", "", 
+    "", "", ""
+  ]
  
   const mark = (event) => {
     if (event.target.innerText != "") return;
+    board[event.target.id] = game.getCurrentPlayer();
     game.playTurn(event);
     _display();
   }
@@ -24,7 +25,12 @@ const gameBoard = (() => { //game board module
     }
   }
 
+  const getBoard = () => {
+    return board;
+  }
+
   return {
+    getBoard,
     mark,
     clear
   }
@@ -33,9 +39,7 @@ const gameBoard = (() => { //game board module
 const Player = (name) => { //Player factory
   let score = 0;
 
-  const win = () => {
-    score++;
-  }
+  const win = () => score++;
 
   const getScore = () => {
     return score;
@@ -87,8 +91,11 @@ const game = (() => { //game logic module
     resultDisplay.innerText = `${xPlayer.name}'s turn`
   }
 
+  const getCurrentPlayer = () => {
+    return currentPlayer;
+  }
+
   const playTurn = (event) => {
-    board[event.target.id] = currentPlayer;
     _checkGame();
     if (winner === true) return;
     if (currentPlayer === "X") {
@@ -102,8 +109,10 @@ const game = (() => { //game logic module
   }
  
   const _checkGame = () => {
+    let board = gameBoard.getBoard();
+
     for (let i = 0; i <= 6; i += 3) { //rows
-      let row = board.slice(i, (i+3));
+      let row = get=board.slice(i, (i+3));
       if (row.every(box => box === row[0] && box != "")) {
         _callWinner();
       }
@@ -152,6 +161,7 @@ const game = (() => { //game logic module
     start,
     restart,
     playTurn,
+    getCurrentPlayer
   }
 })();
 
