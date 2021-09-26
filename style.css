@@ -2,31 +2,54 @@ body {
   margin: auto 2vw;
   display: flex;
   flex-direction: column;
+  font-family: 'Rampart One', cursive;
   align-items: center;
+  background-color: #c2e2f1;
+  color: #000000;
 }
 
-/* #title {
-  margin-bottom: 5px;
-} */
+#title {
+  margin-top: 2.5vh;
+  margin-bottom: 20px;
+  font-size: 4em;
+}
 
 .board {
   width: 100%;
   height: 500px;
   display: grid;
-  border: 2px solid black;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
+  column-gap: 1px;
+  row-gap: 1px;
   max-width: 500px;
-  max-height: 500px;
+  max-height: 500px; 
 }
 
 .box {
-  border: 2px solid black;
+  border: 2px solid #080705;
+  background-color: #DAF8FC;
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 5rem
+  font-size: 5rem;
+  font-family: "Valera Round", sans-serif;
+
+}
+
+.container {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 1.4em;
+  font-weight: 500px;
+  font-family: sans-serif;
+}
+
+button {
+  font-family: sans-serif;;
+  margin-top: 25px;
 }
 
 .player-input {
@@ -37,7 +60,8 @@ body {
 }
 
 .results {
-  margin-bottom: 0px;
+  font-size: 30px;
+  margin-bottom: 20px;
 }
 
 .score-container {
