@@ -7,11 +7,21 @@ const gameBoard = (() => { //game board module
   ]
  
   const mark = (event) => {
-    if (event.target.innerText != "") return;
-    board[event.target.id] = game.getCurrentPlayer();
-    game.playTurn(event);
+    let position = event.target.id;
+    if (board[position] != "") return;
+    board[position] = game.getCurrentPlayer();
+    game.playTurn();
     _display();
   }
+
+  const AImark = () => {
+    let position = AI.play();
+    board[position] = "O";
+    _display();
+  }
+
+  //Todo: Combine these two ^^
+
 
   const clear = () => {
     board = ["", "", "", "", "", "", "", "", ""];
@@ -32,6 +42,7 @@ const gameBoard = (() => { //game board module
   return {
     getBoard,
     mark,
+    AImark,
     clear
   }
 })();
@@ -55,21 +66,46 @@ const game = (() => { //game logic module
   const scoreDisplay = document.querySelector(".score-container");
   const playerOneScore = document.getElementById("player-1-score");
   const playerTwoScore = document.getElementById("player-2-score");
+  const playerInput = document.getElementById("player-input")
 
   let currentPlayer = "X";
   let xPlayer = ""
   let oPlayer = ""
   let winner = false;
+  let AI = false;
+
+  const choosePlayer = (event) => {
+    const playerChoiceContainer = document.getElementById("player-choice-container");
+    playerChoiceContainer.classList.add("invisible");
+
+    if (event.target.id === "player-button") {
+      AI = false;
+      playerInput.classList.remove("invisible");
+      startButton.classList.remove("invisible");
+    }
+
+    if (event.target.id === "ai-button") {
+      AI = true;
+      start();
+    }
+  }
 
   const start = () => {
-    const playerInput = document.getElementById("player-input")
-    const playerOneInput = document.getElementById("player-1-input");
-    const playerTwoInput = document.getElementById("player-2-input");
 
-    if (playerOneInput.value === "" || playerTwoInput.value === "") return;    
+    if (AI === false) {
+      const playerOneInput = document.getElementById("player-1-input");
+      const playerTwoInput = document.getElementById("player-2-input");
 
-    xPlayer = Player(playerOneInput.value);
-    oPlayer = Player(playerTwoInput.value);
+      if (playerOneInput.value === "" || playerTwoInput.value === "") return;    
+
+      xPlayer = Player(playerOneInput.value);
+      oPlayer = Player(playerTwoInput.value);
+    }
+
+    if (AI === true) {
+      xPlayer = Player("Human");
+      oPlayer = Player("AI");
+    }
 
     playerInput.classList.add("invisible");
     startButton.classList.add("invisible");
@@ -95,12 +131,24 @@ const game = (() => { //game logic module
     return currentPlayer;
   }
 
-  const playTurn = (event) => {
+  const playTurn = () => {
     _checkGame();
     if (winner === true) return;
     if (currentPlayer === "X") {
+
+      if (AI === true) { //Play the AI's turn immediately
+        currentPlayer = "O";
+        resultDisplay.innerText = `${oPlayer.name}'s turn`;
+        gameBoard.AImark();
+        _checkGame();
+        if (winner === true) return;
+        currentPlayer = "X";
+        resultDisplay.innerText = `${xPlayer.name}'s turn`;
+
+      } else {
       currentPlayer = "O";
       resultDisplay.innerText = `${oPlayer.name}'s turn`
+      }
     }
     else {
       currentPlayer = "X"
@@ -158,12 +206,45 @@ const game = (() => { //game logic module
   }
 
   return {
+    choosePlayer,
     start,
     restart,
     playTurn,
     getCurrentPlayer
   }
 })();
+
+const AI = (() => {
+
+  const getRandomInt = (min, max) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+  }
+
+  const play = () => {
+    let playableIndex = [];
+    let board = gameBoard.getBoard();
+    let index = board.indexOf("");
+    while (index != -1) {
+      playableIndex.push(index);
+      index = board.indexOf("", index + 1);
+    }
+    let position = getRandomInt(0, playableIndex.length);
+    let markPosition = playableIndex[position];
+    return markPosition;
+  }
+
+  return {
+    play
+  }
+
+})();
+
+const choosePlayerButtons = document.querySelectorAll(".player-choice");
+choosePlayerButtons.forEach(button => {
+  button.addEventListener("click", game.choosePlayer);
+})
 
 const startButton = document.getElementById("start-button");
 startButton.addEventListener("click", game.start);

@@ -27,7 +27,11 @@
 
   <div class="container">
     <div class="results invisible" id="results"></div>
-    <div class="player-input" id="player-input">
+    <div class="player-choice-container" id="player-choice-container">
+      <button class="player-choice" id="ai-button">Play an AI</button>
+      <button class="player-choice" id="player-button">Player vs. Player</button>
+    </div>
+    <div class="player-input invisible" id="player-input">
       <div id="player-1">
         <label for="player-1-input">Player 1 Name: </label>
         <input type="text" id="player-1-input">
@@ -42,7 +46,7 @@
       <div class="score" id="player-2-score"></div>
     </div>
     <div class="button-container" id="button-container">
-      <button type="button" id="start-button">Start</button>
+      <button type="button" id="start-button" class="invisible">Start</button>
       <button type="button" id="restart-button" class="invisible">Play Again</button>
     </div>
   </div>
