@@ -20,9 +20,6 @@ const gameBoard = (() => { //game board module
     _display();
   }
 
-  //Todo: Combine these two ^^
-
-
   const clear = () => {
     board = ["", "", "", "", "", "", "", "", ""];
     _display();
@@ -104,7 +101,7 @@ const game = (() => { //game logic module
 
     if (AI === true) {
       xPlayer = Player("Human");
-      oPlayer = Player("AI");
+      oPlayer = Player("Computer");
     }
 
     playerInput.classList.add("invisible");
@@ -139,11 +136,13 @@ const game = (() => { //game logic module
       if (AI === true) { //Play the AI's turn immediately
         currentPlayer = "O";
         resultDisplay.innerText = `${oPlayer.name}'s turn`;
-        gameBoard.AImark();
-        _checkGame();
+        setTimeout(gameBoard.AImark, 800);
+        setTimeout(_checkGame, 850);
         if (winner === true) return;
+        setTimeout(() => {
         currentPlayer = "X";
         resultDisplay.innerText = `${xPlayer.name}'s turn`;
+        }, 850);
 
       } else {
       currentPlayer = "O";
@@ -160,7 +159,7 @@ const game = (() => { //game logic module
     let board = gameBoard.getBoard();
 
     for (let i = 0; i <= 6; i += 3) { //rows
-      let row = get=board.slice(i, (i+3));
+      let row = board.slice(i, (i+3));
       if (row.every(box => box === row[0] && box != "")) {
         _callWinner();
       }
