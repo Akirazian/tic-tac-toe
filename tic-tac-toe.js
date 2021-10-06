@@ -137,12 +137,12 @@ const game = (() => { //game logic module
         currentPlayer = "O";
         resultDisplay.innerText = `${oPlayer.name}'s turn`;
         setTimeout(gameBoard.AImark, 800);
-        setTimeout(_checkGame, 850);
-        if (winner === true) return;
-        setTimeout(() => {
-        currentPlayer = "X";
-        resultDisplay.innerText = `${xPlayer.name}'s turn`;
-        }, 850);
+        setTimeout(_checkGame, 810);
+        setTimeout(() => { 
+          if (winner === true) return;
+          currentPlayer = "X";
+          resultDisplay.innerText = `${xPlayer.name}'s turn`;
+        }, 820);
 
       } else {
       currentPlayer = "O";
