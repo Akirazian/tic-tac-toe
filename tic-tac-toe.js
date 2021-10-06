@@ -136,12 +136,14 @@ const game = (() => { //game logic module
       if (AI === true) { //Play the AI's turn immediately
         currentPlayer = "O";
         resultDisplay.innerText = `${oPlayer.name}'s turn`;
+        boxes.forEach(box => box.removeEventListener("click", gameBoard.mark));
         setTimeout(gameBoard.AImark, 800);
         setTimeout(_checkGame, 810);
         setTimeout(() => { 
           if (winner === true) return;
           currentPlayer = "X";
           resultDisplay.innerText = `${xPlayer.name}'s turn`;
+          boxes.forEach((box) => box.addEventListener("click", gameBoard.mark));
         }, 820);
 
       } else {
@@ -215,7 +217,7 @@ const game = (() => { //game logic module
 
 const AI = (() => {
 
-  const getRandomInt = (min, max) => {
+  const _getRandomInt = (min, max) => {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
@@ -229,7 +231,7 @@ const AI = (() => {
       playableIndex.push(index);
       index = board.indexOf("", index + 1);
     }
-    let position = getRandomInt(0, playableIndex.length);
+    let position = _getRandomInt(0, playableIndex.length);
     let markPosition = playableIndex[position];
     return markPosition;
   }
@@ -241,10 +243,7 @@ const AI = (() => {
 })();
 
 const choosePlayerButtons = document.querySelectorAll(".player-choice");
-choosePlayerButtons.forEach(button => {
-  button.addEventListener("click", game.choosePlayer);
-})
-
+choosePlayerButtons.forEach(button => button.addEventListener("click", game.choosePlayer));
 const startButton = document.getElementById("start-button");
 startButton.addEventListener("click", game.start);
 const restartButton = document.getElementById("restart-button");
