@@ -85,11 +85,17 @@ button {
   margin-bottom: 5px;
 }
 
-/* .button-container {
-  display: flex;
-  justify-content: center;
-} */
-
 .invisible {
   display: none;
+}
+
+footer {
+  position: fixed;
+  font-family: 'Fredoka One', cursive;
+  text-align: center;
+  font-size: 20px;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  margin-bottom: 15px;
 }
