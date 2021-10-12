@@ -15,7 +15,7 @@ const gameBoard = (() => { //game board module
   }
 
   const AImark = () => {
-    let position = AI.play();
+    let position = AI.bestPlay();
     board[position] = "O";
     _display();
   }
@@ -68,7 +68,6 @@ const game = (() => { //game logic module
   let currentPlayer = "X";
   let xPlayer = ""
   let oPlayer = ""
-  let winner = false;
   let AI = false;
 
   const choosePlayer = (event) => {
@@ -129,18 +128,24 @@ const game = (() => { //game logic module
   }
 
   const playTurn = () => {
-    _checkGame();
-    if (winner === true) return;
+    let board = gameBoard.getBoard();
+    let result = checkGame(board);
+    if (result != null) {
+      _callWinner();
+      return;
+    };
     if (currentPlayer === "X") {
-
       if (AI === true) { //Play the AI's turn immediately
         currentPlayer = "O";
         resultDisplay.innerText = `${oPlayer.name}'s turn`;
         boxes.forEach(box => box.removeEventListener("click", gameBoard.mark));
         setTimeout(gameBoard.AImark, 800);
-        setTimeout(_checkGame, 810);
-        setTimeout(() => { 
-          if (winner === true) return;
+        setTimeout(() => {
+          result = checkGame(board);
+          if (result != null) {
+            _callWinner();
+            return
+          };
           currentPlayer = "X";
           resultDisplay.innerText = `${xPlayer.name}'s turn`;
           boxes.forEach((box) => box.addEventListener("click", gameBoard.mark));
@@ -157,42 +162,41 @@ const game = (() => { //game logic module
     }
   }
  
-  const _checkGame = () => {
-    let board = gameBoard.getBoard();
-
+  const checkGame = (board) => {
     for (let i = 0; i <= 6; i += 3) { //rows
       let row = board.slice(i, (i+3));
       if (row.every(box => box === row[0] && box != "")) {
-        _callWinner();
+        return currentPlayer;
       }
     }
 
     for (let i = 0; i <= 2; i++) { //columns
       let column = [board[i], board[i+3], board[i+6]];
       if (column.every(box => box === column[0] && box != "")) {
-        _callWinner();
+        return currentPlayer;
       }
     }
 
     let diagnol1 = [board[0], board[4], board[8]];
     if (diagnol1.every(box => box === diagnol1[0] && box != "")) {
-      _callWinner();
+      return currentPlayer;
     }
 
     let diagnol2 = [board[2], board[4], board[6]];
     if (diagnol2.every(box => box === diagnol2[0] && box != "")) {
-      _callWinner();
+      return currentPlayer;
     }
     
-    if (board.every((value => value != "")) && winner === false) {
+    if (board.every((value => value != "")) && board.some((value => value === ""))) {
        resultDisplay.innerText = "It's a draw!";
        restartButton.classList.remove("invisible");
-       winner = true;
+       return "tie";
     }
+
+    return null;
   } 
 
   const _callWinner = () => {
-    winner = true;
     if (currentPlayer === "X") {
       xPlayer.win()
       resultDisplay.innerText = `${xPlayer.name} wins!` 
@@ -211,6 +215,7 @@ const game = (() => { //game logic module
     start,
     restart,
     playTurn,
+    checkGame,
     getCurrentPlayer
   }
 })();
@@ -223,7 +228,7 @@ const AI = (() => {
     return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
   }
 
-  const play = () => {
+  const randomPlay = () => {
     let playableIndex = [];
     let board = gameBoard.getBoard();
     let index = board.indexOf("");
@@ -236,8 +241,65 @@ const AI = (() => {
     return markPosition;
   }
 
+  const bestPlay = () => {
+    let board = gameBoard.getBoard();
+    let bestScore = -Infinity;
+    let bestMove;
+    for (let i = 0; i < board.length; i++) {
+      if (board[i] === "") {
+        board[i] = "O";
+        let score = _minimax(board, 0, false);
+        board[i] = "";
+        if (score > bestScore) {
+          bestScore = score;
+          bestMove = i;
+        }
+      }
+    }
+    return bestMove;
+  }
+
+  let scores = {
+    O: 1,
+    X: -1,
+    tie: 0
+  };
+
+  const _minimax = (board, depth, isMaximizing) => {
+    let result = game.checkGame(board);
+    if (result != null) {
+      return scores[result];
+    }
+
+    if (isMaximizing) {
+      let bestScore = -Infinity;
+      for (let i = 0; i < board.length; i++) {
+        if (board[i] === "") {
+          board[i] = "O";
+          let score = _minimax(board, depth + 1, false)
+          board[i] = "";
+          bestScore = Math.max(score, bestScore);
+        }
+      }
+      return bestScore;
+    } else {
+      let bestScore = Infinity;
+      for (let i = 0; i < board.length; i++) {
+        if (board[i] === "") {
+          board[i] = "X";
+          let score = _minimax(board, depth + 1, true)
+          board[i] = "";
+          bestScore = Math.min(score, bestScore);
+        }
+      }
+      return bestScore;
+    }
+  };
+  
+
   return {
-    play
+    randomPlay,
+    bestPlay
   }
 
 })();
