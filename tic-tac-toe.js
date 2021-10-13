@@ -166,25 +166,25 @@ const game = (() => { //game logic module
     for (let i = 0; i <= 6; i += 3) { //rows
       let row = board.slice(i, (i+3));
       if (row.every(box => box === row[0] && box != "")) {
-        return currentPlayer;
+        return row[0];
       }
     }
 
     for (let i = 0; i <= 2; i++) { //columns
       let column = [board[i], board[i+3], board[i+6]];
       if (column.every(box => box === column[0] && box != "")) {
-        return currentPlayer;
+        return column[0];
       }
     }
 
     let diagnol1 = [board[0], board[4], board[8]];
     if (diagnol1.every(box => box === diagnol1[0] && box != "")) {
-      return currentPlayer;
+      return diagnol1[0];
     }
 
     let diagnol2 = [board[2], board[4], board[6]];
     if (diagnol2.every(box => box === diagnol2[0] && box != "")) {
-      return currentPlayer;
+      return diagnol2[0];
     }
     
     if (board.every((value => value != "")) && board.some((value => value === ""))) {
@@ -260,8 +260,8 @@ const AI = (() => {
   }
 
   let scores = {
-    O: 1,
-    X: -1,
+    O: 10,
+    X: -10,
     tie: 0
   };
 
