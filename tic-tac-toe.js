@@ -131,7 +131,7 @@ const game = (() => { //game logic module
     let board = gameBoard.getBoard();
     let result = checkGame(board);
     if (result != null) {
-      _callWinner();
+      _callWinner(result);
       return;
     };
     if (currentPlayer === "X") {
@@ -187,16 +187,19 @@ const game = (() => { //game logic module
       return diagnol2[0];
     }
     
-    if (board.every((value => value != "")) && board.some((value => value === ""))) {
-       resultDisplay.innerText = "It's a draw!";
-       restartButton.classList.remove("invisible");
-       return "tie";
-    }
+    if (board.every((value => value != ""))) {
+      return "tie";
+   }
 
     return null;
   } 
 
-  const _callWinner = () => {
+  const _callWinner = (result) => {
+    if (result === "tie") {
+      resultDisplay.innerText = "It's a draw!";
+      restartButton.classList.remove("invisible");
+      return;
+    }
     if (currentPlayer === "X") {
       xPlayer.win()
       resultDisplay.innerText = `${xPlayer.name} wins!` 
