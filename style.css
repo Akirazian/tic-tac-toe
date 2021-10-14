@@ -1,4 +1,5 @@
 body {
+  height: 100vh;
   margin: auto 2vw;
   display: flex;
   flex-direction: column;
@@ -11,7 +12,14 @@ body {
 #title {
   margin-top: 2.5vh;
   margin-bottom: 20px;
-  font-size: 4em;
+  font-size: 4.5em;
+  width: auto;
+}
+
+@media only screen and (max-width: 768px) {
+  #title {
+    font-size: 3.2em;
+  }
 }
 
 .board {
@@ -43,6 +51,7 @@ body {
 }
 
 .container {
+  height: 166px;
   text-align: center;
   margin-top: 30px;
   font-size: 1.4em;
@@ -90,12 +99,11 @@ button {
 }
 
 footer {
-  position: fixed;
+  position: relative;
   font-family: 'Fredoka One', cursive;
   text-align: center;
+  top: 40px;
   font-size: 20px;
-  left: 0;
-  bottom: 0;
   width: 100%;
-  margin-bottom: 15px;
+  padding-bottom: 15px;
 }
