@@ -1,40 +1,33 @@
-const gameBoard = (() => { //game board module
+const gameBoard = (() => { 
 
   let board = [
     "", "", "", 
     "", "", "", 
     "", "", ""
-  ]
+  ];
  
-  const mark = (event) => {
+  const mark = (event) => { //replace parameter with position to combine this and AIMark into one public method
     let position = event.target.id;
     if (board[position] != "") return;
     board[position] = game.getCurrentPlayer();
     game.playTurn();
-    _display();
-  }
+    display.board();
+  };
 
   const AImark = () => {
-    let position = AI.bestPlay();
+    let position = AI.play();
     board[position] = "O";
-    _display();
-  }
+    display.board();
+  };
 
   const clear = () => {
     board = ["", "", "", "", "", "", "", "", ""];
-    _display();
-  }
-
-  const _display = () => {
-    for (let i = 0; i < board.length; i++) {
-      let box = document.getElementById(i);
-      box.innerText = board[i];
-    }
-  }
+    display.board();
+  };
 
   const getBoard = () => {
     return board;
-  }
+  };
 
   return {
     getBoard,
@@ -44,7 +37,7 @@ const gameBoard = (() => { //game board module
   }
 })();
 
-const Player = (name) => { //Player factory
+const Player = (name) => {
   let score = 0;
 
   const win = () => score++;
@@ -56,7 +49,23 @@ const Player = (name) => { //Player factory
   return { name, getScore, win };
 };
 
-const game = (() => { //game logic module
+const display = (() => {
+  
+  const board = () => {
+    let gameboard = gameBoard.getBoard();
+    for (let i = 0; i < gameboard.length; i++) {
+      let box = document.getElementById(i);
+      box.innerText = gameboard[i];
+    }
+  };
+
+  return {
+    board
+  }
+
+})();
+
+const game = (() => {
 
   const boxes = document.querySelectorAll(".box");
   const resultDisplay = document.querySelector(".results");
@@ -64,10 +73,11 @@ const game = (() => { //game logic module
   const playerOneScore = document.getElementById("player-1-score");
   const playerTwoScore = document.getElementById("player-2-score");
   const playerInput = document.getElementById("player-input")
+  const AIChoiceContainer = document.getElementById("ai-choice-container");
 
   let currentPlayer = "X";
-  let xPlayer = ""
-  let oPlayer = ""
+  let xPlayer;
+  let oPlayer;
   let AI = false;
 
   const choosePlayer = (event) => {
@@ -81,10 +91,10 @@ const game = (() => { //game logic module
     }
 
     if (event.target.id === "ai-button") {
+      AIChoiceContainer.classList.remove("invisible");
       AI = true;
-      start();
     }
-  }
+  };
 
   const start = () => {
 
@@ -101,6 +111,7 @@ const game = (() => { //game logic module
     if (AI === true) {
       xPlayer = Player("Human");
       oPlayer = Player("Computer");
+      AIChoiceContainer.classList.add("invisible");
     }
 
     playerInput.classList.add("invisible");
@@ -111,7 +122,7 @@ const game = (() => { //game logic module
     playerOneScore.innerText = `${xPlayer.name}: ${xPlayer.getScore()}`
     playerTwoScore.innerText = `${oPlayer.name}: ${oPlayer.getScore()}`
     boxes.forEach((box) => box.addEventListener("click", gameBoard.mark))
-  }
+  };
 
   const restart = () => {
     gameBoard.clear();
@@ -121,11 +132,11 @@ const game = (() => { //game logic module
     winner = false;
     currentPlayer = "X";
     resultDisplay.innerText = `${xPlayer.name}'s turn`
-  }
+  };
 
   const getCurrentPlayer = () => {
     return currentPlayer;
-  }
+  };
 
   const playTurn = () => {
     let board = gameBoard.getBoard();
@@ -133,7 +144,8 @@ const game = (() => { //game logic module
     if (result != null) {
       _callWinner(result);
       return;
-    };
+    }
+
     if (currentPlayer === "X") {
       if (AI === true) { //Play the AI's turn immediately
         currentPlayer = "O";
@@ -155,12 +167,11 @@ const game = (() => { //game logic module
       currentPlayer = "O";
       resultDisplay.innerText = `${oPlayer.name}'s turn`
       }
-    }
-    else {
+    } else {
       currentPlayer = "X"
       resultDisplay.innerText = `${xPlayer.name}'s turn`
     }
-  }
+  };
  
   const checkGame = (board) => {
     for (let i = 0; i <= 6; i += 3) { //rows
@@ -192,7 +203,7 @@ const game = (() => { //game logic module
    }
 
     return null;
-  } 
+  };
 
   const _callWinner = (result) => {
     if (result === "tie") {
@@ -211,7 +222,7 @@ const game = (() => { //game logic module
     playerTwoScore.innerText = `${oPlayer.name}: ${oPlayer.getScore()}`
     boxes.forEach(box => box.removeEventListener("click", gameBoard.mark))
     restartButton.classList.remove("invisible");
-  }
+  };
 
   return {
     choosePlayer,
@@ -225,13 +236,26 @@ const game = (() => { //game logic module
 
 const AI = (() => {
 
+  let difficulty;
+
   const _getRandomInt = (min, max) => {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+  };
+
+  const choice = (event) => {
+    if (event.target.id === "easy") difficulty = "easy";
+    if (event.target.id === "hard") difficulty = "hard";
+    game.start();
   }
 
-  const randomPlay = () => {
+  const play = () => {
+    if (difficulty === "easy") return _randomPlay();
+    if (difficulty === "hard") return _bestPlay();
+  }
+
+  const _randomPlay = () => {
     let playableIndex = [];
     let board = gameBoard.getBoard();
     let index = board.indexOf("");
@@ -242,9 +266,9 @@ const AI = (() => {
     let position = _getRandomInt(0, playableIndex.length);
     let markPosition = playableIndex[position];
     return markPosition;
-  }
+  };
 
-  const bestPlay = () => {
+  const _bestPlay = () => {
     let board = gameBoard.getBoard();
     let bestScore = -Infinity;
     let bestMove;
@@ -260,7 +284,7 @@ const AI = (() => {
       }
     }
     return bestMove;
-  }
+  };
 
   let scores = {
     O: 10,
@@ -299,12 +323,10 @@ const AI = (() => {
     }
   };
   
-
   return {
-    randomPlay,
-    bestPlay
+    choice,
+    play
   }
-
 })();
 
 const choosePlayerButtons = document.querySelectorAll(".player-choice");
@@ -313,3 +335,5 @@ const startButton = document.getElementById("start-button");
 startButton.addEventListener("click", game.start);
 const restartButton = document.getElementById("restart-button");
 restartButton.addEventListener("click", game.restart);
+const AIChoiceButtons = document.querySelectorAll(".ai-choice");
+AIChoiceButtons.forEach(button => button.addEventListener("click", AI.choice))
